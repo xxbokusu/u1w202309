@@ -1,8 +1,8 @@
-namespace Assets.Scripts.Manager
+namespace unity1week202309.Manager
 {
     public enum Scene
     {
-        None, // 初期値
+        Initialize, // 初期値
         Title,
         Main,
         Result,
