@@ -1,8 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using UnityEngine;
 
-namespace Assets.Scripts.Manager
+namespace unity1week202309.Manager
 {
     /*
      * <summery>
@@ -11,16 +9,22 @@ namespace Assets.Scripts.Manager
      * https://help.unityroom.com/how-to-implement-scoreboard
      * </summery>
      */
-    public class ResultSceneManager: ISceneManager
+    class ResultSceneManager: GameSceneManager
     {
-        public void Initialize()
-        {
+        void Start() {
+            Initialize();
+        }
+        public override void Initialize() {
             
         }
 
-        public void WatchSceneState()
-        {
-            
+        void Update() {
+            WatchSceneState();
+        }
+        public override void WatchSceneState() {
+            if (Input.GetMouseButtonDown(0)) {
+                SceneTransitionManager.Instance.ChangeScene(Scene.Title);
+            }
         }
     }
 }
