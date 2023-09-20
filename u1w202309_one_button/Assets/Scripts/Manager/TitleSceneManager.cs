@@ -1,12 +1,13 @@
-namespace Assets.Scripts.Manager
+using UnityEngine;
+
+namespace unity1week202309.Manager
 {
     /*
      * <summery>
      * タイトルシーンの進行を管理する
      * </summery>
      */
-    public class TitleSceneManager: ISceneManager
-    {
+    class TitleSceneManager: GameSceneManager {
         private enum TitleSceneState
         {
             Waiting,
@@ -15,18 +16,25 @@ namespace Assets.Scripts.Manager
         private TitleSceneState _state = TitleSceneState.Waiting;
         public bool IsWorking { get { return _state == TitleSceneState.Working; } }
 
-        public void Initialize()
-        {
+        void Start() {
+            Initialize();
+        }
+        public override void Initialize() {
             _state = TitleSceneState.Working;
         }
-        
-        public void WatchSceneState()
-        {
-            switch (_state)
-            {
+
+        void Update() {
+            WatchSceneState();
+        }
+        public override void WatchSceneState() {
+            switch (_state) {
                 case TitleSceneState.Waiting:
+                    _state = TitleSceneState.Working;
                     break;
                 case TitleSceneState.Working:
+                    if (Input.GetMouseButtonDown(0)) {
+                        SceneTransitionManager.Instance.ChangeScene(Scene.Main);
+                    }
                     break;
             }
         }

@@ -1,4 +1,7 @@
-namespace Assets.Scripts.Manager
+using System;
+using UnityEngine;
+
+namespace unity1week202309.Manager
 {
     /*
      * <summery>
@@ -6,16 +9,21 @@ namespace Assets.Scripts.Manager
      * 時間制限付きなので時間を管理し、残時間に応じて表現が変遷する
      * </summery>
      */
-    public class MainSceneManager: ISceneManager
-    {
-        public void Initialize()
-        {
-            
+    class MainSceneManager: GameSceneManager {
+        void Start() {
+            Initialize();
         }
 
-        public void WatchSceneState()
-        {
-            
+        public override void Initialize() {
+        }
+
+        void Update() {
+            WatchSceneState();
+        }
+        public override void WatchSceneState() {
+            if (Input.GetMouseButtonDown(0)) {
+                SceneTransitionManager.Instance.ChangeScene(Scene.Result);
+            }
         }
     }
 }
