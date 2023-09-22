@@ -29,10 +29,12 @@ namespace unity1week202309.Manager
         
         private Dictionary<String, AudioClip> _bgmDictionary = new Dictionary<String, AudioClip>() {
             {"maou_bgm_healing11b(moving)", null},
+            {"Sparrow-Real_Ambi01-1", null}
         };
         private Dictionary<String, AudioClip> _seDictionary = new Dictionary<String, AudioClip>() {
             {"maou_se_sound_pc01(click)", null},
             {"maou_se_battle07(shoot)", null},
+            {"maou_se_voice_bird01",null}
         };
 
         private Dictionary<String, AudioSource> _audioSourceDictionary = new Dictionary<String, AudioSource>();

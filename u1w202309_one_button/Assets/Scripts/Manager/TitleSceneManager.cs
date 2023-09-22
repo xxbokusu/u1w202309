@@ -20,7 +20,8 @@ namespace unity1week202309.Manager
             Initialize();
         }
         public override void Initialize() {
-            _state = TitleSceneState.Working;
+            _state = TitleSceneState.Waiting;
+            SoundManager.Instance.PlayBGM("Sparrow-Real_Ambi01-1");
         }
 
         void Update() {
@@ -28,6 +29,7 @@ namespace unity1week202309.Manager
         }
         public override void WatchSceneState() {
             switch (_state) {
+                // 徐々にLogoをFade outし, 完了するとWorkingへ
                 case TitleSceneState.Waiting:
                     _state = TitleSceneState.Working;
                     break;
