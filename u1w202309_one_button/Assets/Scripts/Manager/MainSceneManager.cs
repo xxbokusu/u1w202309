@@ -1,4 +1,6 @@
 using System;
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using UnityEngine;
 
 namespace unity1week202309.Manager {
@@ -9,8 +11,14 @@ namespace unity1week202309.Manager {
      * </summery>
      */
     class MainSceneManager : GameSceneManager {
-        GameObject _unityChan = null;
+        GameObject _unityChan;
+        [SerializeField]Camera _camera;
+
         void Start() {
+            if (_camera == null) {
+                Debug.Util.LogError("MainSceneManager::Start()::_camera is null");
+                return;
+            }
             Initialize();
         }
 
@@ -23,13 +31,18 @@ namespace unity1week202309.Manager {
             }
             
             Instantiate(groundCube, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
-            _unityChan = Instantiate(unityChan, new Vector3(0.0f, 0.5f, 0.0f), Quaternion.identity);
+            // 右向きに生成する
+            _unityChan = Instantiate(unityChan, new Vector3(0.0f, 0.5f, 0.0f), Quaternion.Euler(0.0f, 90.0f, 0.0f));
         }
 
-        void Update() {
+        async void Update() {
             WatchSceneState();
             // unitychanの位置を表示する
             Debug.Util.LogFormat("unitychan position: {0}", _unityChan.transform.position);
+            // unitychanを右に移動させ、カメラも追従する
+            _unityChan.transform.DOMove(new Vector3(2, 0, 0), 1).SetRelative(true);
+            _camera.transform.DOMove(new Vector3(2, 0, 0), 1).SetRelative(true);
+            await UniTask.Delay(1000);
         }
 
         public override void WatchSceneState() {
