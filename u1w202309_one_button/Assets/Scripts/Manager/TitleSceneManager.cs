@@ -34,7 +34,8 @@ namespace unity1week202309.Manager
                     _state = TitleSceneState.Working;
                     break;
                 case TitleSceneState.Working:
-                    if (Input.GetMouseButtonDown(0)) {
+                    // スペースキー入力でMainシーンへ遷移
+                    if (Input.GetKeyDown(KeyCode.Space)) {
                         SceneTransitionManager.Instance.ChangeScene(Scene.Main);
                     }
                     break;

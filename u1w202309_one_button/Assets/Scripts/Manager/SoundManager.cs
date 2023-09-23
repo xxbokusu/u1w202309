@@ -23,6 +23,7 @@ namespace unity1week202309.Manager {
             Ready,
             Playing
         }
+
         private SoundState _currentState = SoundState.None;
 
         public bool IsReady => _currentState == SoundState.Ready;
@@ -34,7 +35,7 @@ namespace unity1week202309.Manager {
 
         private Dictionary<string, AudioClip> _seDictionary = new Dictionary<string, AudioClip>() {
             { "maou_se_voice_bird01", null },
-            { "Crow-Real_Ambi01-1", null}
+            { "Crow-Real_Ambi01-1", null }
         };
 
         private Dictionary<string, AudioSource> _audioSourceDictionary = new Dictionary<String, AudioSource>();
@@ -43,7 +44,7 @@ namespace unity1week202309.Manager {
 
         // ScriptableObjectから音量の倍率を取得する
         [SerializeField] private ConfigScriptableObject _configScriptableObject = null;
-        
+
         void Start() {
             if (Instance == null) {
                 Instance = this;
@@ -52,6 +53,7 @@ namespace unity1week202309.Manager {
             else {
                 Destroy(gameObject);
             }
+
             if (_configScriptableObject == null) {
                 Debug.Util.LogError("SoundManager::Start()::configScriptableObject is null");
                 return;
@@ -67,6 +69,7 @@ namespace unity1week202309.Manager {
                 var req = Resources.LoadAsync<AudioClip>("Audios/BGM/" + key);
                 bgmRequestDictionary.Add(key, req);
             }
+
             var seRequestDictionary = new Dictionary<string, ResourceRequest>();
             foreach (var key in _seDictionary.Keys) {
                 var req = Resources.LoadAsync<AudioClip>("Audios/SE/" + key);
@@ -87,7 +90,7 @@ namespace unity1week202309.Manager {
                 audioSource.loop = true;
                 _audioSourceDictionary.Add(key, audioSource);
             }
-            
+
             await UniTask.WaitUntil(() => seRequestDictionary.Values.All(req => req.isDone), cancellationToken: token);
             foreach (var key in seRequestDictionary.Keys) {
                 var clip = seRequestDictionary[key].asset as AudioClip;
@@ -127,30 +130,35 @@ namespace unity1week202309.Manager {
         private bool CanSetVolume(AudioSource audioSource, float volume) {
             if (volume < 0.0f) return false;
             if (volume > BGMVolumeMax * _configScriptableObject.GetBGMVolumeRate()) {
-                audioSource.volume = BGMVolumeMax * _configScriptableObject.GetBGMVolumeRate();
+                audioSource.volume = ReflectVolumeRate(BGMVolumeMax);
                 return false;
             }
+
             return true;
         }
-        
+        private float ReflectVolumeRate(float volume) {
+            return volume * _configScriptableObject.GetBGMVolumeRate();
+        }
+
         // 再生中のaudioSourceの音量を変更する
         public void ResetBGMVolume() {
             if (_currentState != SoundState.Playing) {
                 return;
             }
 
-            Debug.Util.LogFormat("SoundManager::ResetBGMVolume()::Reset BGM Volume to {0}", _configScriptableObject.GetBGMVolumeRate());
+            Debug.Util.LogFormat("SoundManager::ResetBGMVolume()::Reset BGM Volume to {0}",
+                _configScriptableObject.GetBGMVolumeRate());
             foreach (var audioSource in _audioSourceDictionary.Values) {
                 if (!audioSource.isPlaying) continue;
-                audioSource.volume = audioSource.volume * _configScriptableObject.GetBGMVolumeRate() * 2.0f;
+                audioSource.volume = ReflectVolumeRate(audioSource.volume);
             }
         }
-        
+
         // 音量を徐々に大きくすることでフェードインする
         private async UniTaskVoid FadeInAsync(AudioSource audioSource, CancellationToken token) {
-            audioSource.volume = 0.0f;
+            audioSource.volume = ReflectVolumeRate(0.0f);
             while (CanSetVolume(audioSource, audioSource.volume + 0.01f)) {
-                audioSource.volume = (audioSource.volume + 0.01f) * _configScriptableObject.GetBGMVolumeRate();
+                audioSource.volume = ReflectVolumeRate(audioSource.volume + 0.01f);
                 await UniTask.Delay(10);
             }
         }
@@ -176,7 +184,7 @@ namespace unity1week202309.Manager {
         //フェードアウト
         private async UniTaskVoid FadeOutAsync(AudioSource audioSource, CancellationToken token) {
             while (CanSetVolume(audioSource, audioSource.volume - 0.01f)) {
-                audioSource.volume = (audioSource.volume - 0.01f) * _configScriptableObject.GetBGMVolumeRate();
+                audioSource.volume = ReflectVolumeRate(audioSource.volume - 0.01f);
                 await UniTask.Delay(10);
             }
         }
@@ -195,7 +203,7 @@ namespace unity1week202309.Manager {
                 return;
             }
 
-            audioSource.volume = 0.5f;
+            audioSource.volume = ReflectVolumeRate(0.5f);
             audioSource.PlayOneShot(_seDictionary[seName]);
         }
     }

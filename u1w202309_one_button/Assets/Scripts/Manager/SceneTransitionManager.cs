@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine.SceneManagement;
 using System.Threading;
 using unity1week202309.Object;
+using UnityEngine.Serialization;
 
 namespace unity1week202309.Manager
 {
@@ -22,39 +23,36 @@ namespace unity1week202309.Manager
      * </summery>
      */
     public class SceneTransitionManager: MonoBehaviour {
-        private static SceneTransitionManager _instance = null;
-        public static SceneTransitionManager Instance {
-            get {
-                return _instance;
-            }
-        }
-        
+        public static SceneTransitionManager Instance { get; private set; } = null;
+
         private Scene _currentScene = Scene.Initialize;
         private Scene _nextScene = Scene.Title;
         private bool _isTransition;
+        public bool IsTransition => _isTransition;
+
         private bool _isInitialized = false;
         
         // シーン遷移時にFade out/inをするためのCanvas
-        [SerializeField] private FadeCanvas _fadeCanvas;
+        [SerializeField] private FadeCanvas fadeCanvas;
         // クレジット表示用のCanvasGroup.最初に一度だけFade outする
-        [SerializeField] private CanvasGroup _creditCanvasGroup;
+        [SerializeField] private CanvasGroup creditCanvasGroup;
         
         void Awake() {
-            if (_instance == null) {
-                _instance = this;
+            if (Instance == null) {
+                Instance = this;
                 DontDestroyOnLoad(gameObject);
             } else {
                 Destroy(gameObject);
             }
-            if (_fadeCanvas == null) {
+            if (fadeCanvas == null) {
                 Debug.Util.LogError("SceneTransitionManager::Awake()::fadeCanvas is null");
                 return;
             }
-            if (_creditCanvasGroup == null) {
+            if (creditCanvasGroup == null) {
                 Debug.Util.LogError("SceneTransitionManager::Awake()::creditCanvasGroup is null");
                 return;
             }
-            _creditCanvasGroup.alpha = 1.0f;
+            creditCanvasGroup.alpha = 1.0f;
         }
         
         public void ChangeScene(Scene targetScene) {
@@ -64,18 +62,20 @@ namespace unity1week202309.Manager
 
         // クレジットのフェードアウトを見てから初回遷移をする
         private void Update() {
-            if (!_isInitialized && _creditCanvasGroup.alpha <= 0.0f) {
-                _isInitialized = true;
-                ChangeScene(_nextScene);
-            } else if (!_isInitialized) {
-                _creditCanvasGroup.alpha -= 0.01f;
-            }
+            if (_isInitialized) return;
+
+            creditCanvasGroup.alpha -= 0.01f;
+            if (creditCanvasGroup.alpha > 0.0f) return;
+
+            _isInitialized = true;
+            creditCanvasGroup.gameObject.SetActive(false);
+            ChangeScene(_nextScene);
         }
 
         //非同期的に次のシーンを読み込んで遷移する. 読み込み開始でフェードアウト, 読み込み完了でフェードイン
         private async UniTaskVoid LoadSceneAsync(Scene targetScene, CancellationToken token) {
-            _fadeCanvas.SceneFadeOutAsync(token).Forget();
-            await UniTask.WaitUntil(() => !_fadeCanvas.IsFadeOut, cancellationToken: token);
+            fadeCanvas.SceneFadeOutAsync(token).Forget();
+            await UniTask.WaitUntil(() => !fadeCanvas.IsFadeOut, cancellationToken: token);
 
             Debug.Util.LogFormat("SceneTransitionManager::loadSceneAsync()::scene transition {0} > {1}", this._currentScene ,targetScene);
             if (_currentScene != Scene.Initialize && SceneManager.GetSceneByName(_currentScene.ToString()).IsValid())
@@ -88,7 +88,7 @@ namespace unity1week202309.Manager
             await UniTask.WaitUntil(() => progress.isDone, cancellationToken: token);
             _isTransition = false;
             SceneManager.SetActiveScene(SceneManager.GetSceneByName(_nextScene.ToString()));
-            _fadeCanvas.SceneFadeInAsync(token).Forget();
+            fadeCanvas.SceneFadeInAsync(token).Forget();
             _currentScene = targetScene;
         }
     }
