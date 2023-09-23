@@ -15,6 +15,13 @@ namespace unity1week202309.Manager
         }
 
         public override void Initialize() {
+            var unityChan = ObjectsManager.Instance.GetObject("Prefab/unitychan_dynamic");
+            if (unityChan == null) {
+                Debug.Util.LogError("MainSceneManager::Initialize()::unitychan is null");
+                return;
+            }
+
+            Instantiate(unityChan, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
         }
 
         void Update() {
