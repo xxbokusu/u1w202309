@@ -16,7 +16,8 @@ namespace unity1week202309.Manager {
         public bool IsReady => _currentState == ObjectState.Ready;
 
         private Dictionary<string, GameObject> _objectsDictionary = new() {
-            { "Prefab/unitychan_dynamic", null }
+            { "Prefab/unitychan_dynamic", null },
+            { "Prefab/GroundCube", null}
         };
         
         private void Start() {

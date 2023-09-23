@@ -4,44 +4,42 @@ using Cysharp.Threading.Tasks;
 using System.Threading;
 
 namespace unity1week202309.Object {
-    public class FadeCanvas : MonoBehaviour
-    {
+    public class FadeCanvas : MonoBehaviour {
         private static bool _isFadeInstance = false;
+
         // フェードイン/フェードアウトフラグ
         private bool _isFadeIn = false;
-        public bool IsFadeIn => this._isFadeIn;
+        public bool IsFadeIn => _isFadeIn;
         private bool _isFadeOut = false;
-        public bool IsFadeOut => this._isFadeOut;
+        public bool IsFadeOut => _isFadeOut;
 
         // フェードを管理するパラメータ
-        public float fadeAlpha = 0.0f;
-        public float fadeSpeed = 0.2f;
+        public float fadeAlpha;
+        [SerializeField] private float fadeSpeed = 0.5f;
 
         // Start is called before the first frame update
-        void Start()
-        {
-            if (_isFadeInstance)
-            {
-                Destroy(this.gameObject);
+        void Start() {
+            if (_isFadeInstance) {
+                Destroy(this);
             }
-            else
-            {
-                DontDestroyOnLoad(this.gameObject);
+            else {
+                DontDestroyOnLoad(this);
                 _isFadeInstance = true;
             }
         }
-        
+
         public async UniTaskVoid SceneFadeInAsync(CancellationToken token) {
-            this._isFadeIn = true;
-            this._isFadeOut = false;
-            while (token.IsCancellationRequested == false && this.fadeAlpha > 0.0f) {
-                this.fadeAlpha -= this.fadeSpeed;
-                this.GetComponentInChildren<Image>().color = new Color(0.0f, 0.0f, 0.0f, this.fadeAlpha);
+            _isFadeIn = true;
+            _isFadeOut = false;
+            while (token.IsCancellationRequested == false && fadeAlpha > 0.0f) {
+                fadeAlpha -= fadeSpeed;
+                GetComponentInChildren<Image>().color = new Color(0.0f, 0.0f, 0.0f, fadeAlpha);
                 await UniTask.DelayFrame(10, cancellationToken: token);
             }
-            this.fadeAlpha = 0.0f;
-            this._isFadeIn = false;
-            Debug.Util.Log("FadeCanvas::SceneFadeInAsync()::fadeAlpha = " + this.fadeAlpha);
+
+            fadeAlpha = 0.0f;
+            _isFadeIn = false;
+            Debug.Util.Log("FadeCanvas::SceneFadeInAsync()::fadeAlpha = " + fadeAlpha);
             this.gameObject.SetActive(false);
         }
 
@@ -54,6 +52,7 @@ namespace unity1week202309.Object {
                 GetComponentInChildren<Image>().color = new Color(0.0f, 0.0f, 0.0f, fadeAlpha);
                 await UniTask.DelayFrame(10, cancellationToken: token);
             }
+
             fadeAlpha = 1.0f;
             _isFadeOut = false;
             Debug.Util.Log("FadeCanvas::SceneFadeOutAsync()::fadeAlpha = " + fadeAlpha);
