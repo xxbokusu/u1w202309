@@ -9,7 +9,7 @@ namespace ScriptableObject {
      */
     [CreateAssetMenu(fileName = "GameConfig", menuName = "ScriptableObject/GameConfig")]
     public class ConfigScriptableObject : UnityEngine.ScriptableObject {
-        [SerializeField] private float bgmVolumeRate = 1.0f;
+        [SerializeField] private float bgmVolumeRate = 0.5f;
 
         // BGMの音量倍率変更を反映して、再生中のBGMの音量を変更する
         public void SetBGMVolumeRate(float volume) {
