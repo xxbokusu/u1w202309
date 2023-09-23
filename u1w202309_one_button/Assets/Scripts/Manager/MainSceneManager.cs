@@ -1,6 +1,7 @@
 using System;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using unity1week202309.Controller;
 using UnityEngine;
 
 namespace unity1week202309.Manager {
@@ -12,6 +13,7 @@ namespace unity1week202309.Manager {
      */
     class MainSceneManager : GameSceneManager {
         GameObject _unityChan;
+        private GirlController _girlController;
         [SerializeField]Camera _camera;
 
         void Start() {
@@ -33,6 +35,11 @@ namespace unity1week202309.Manager {
             Instantiate(groundCube, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
             // 右向きに生成する
             _unityChan = Instantiate(unityChan, new Vector3(0.0f, 0.5f, 0.0f), Quaternion.Euler(0.0f, 90.0f, 0.0f));
+            _girlController = _unityChan.GetComponent<GirlController>();
+            if (_girlController == null) {
+                Debug.Util.LogError("MainSceneManager::Initialize()::_girlController is null");
+                return;
+            }
         }
 
         async void Update() {
@@ -40,8 +47,13 @@ namespace unity1week202309.Manager {
             // unitychanの位置を表示する
             Debug.Util.LogFormat("unitychan position: {0}", _unityChan.transform.position);
             // unitychanを右に移動させ、カメラも追従する
-            _unityChan.transform.DOMove(new Vector3(2, 0, 0), 1).SetRelative(true);
-            _camera.transform.DOMove(new Vector3(2, 0, 0), 1).SetRelative(true);
+            if (!_girlController.IsWalking) return;
+
+            var moveVector = new Vector3(1, 0, 0);
+            if (_girlController.IsRunning) moveVector *= 2;
+
+            _unityChan.transform.DOMove(moveVector, 1).SetRelative(true);
+            _camera.transform.DOMove(moveVector, 1).SetRelative(true);
             await UniTask.Delay(1000);
         }
 
