@@ -1,3 +1,5 @@
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace unity1week202309.Manager
@@ -11,7 +13,8 @@ namespace unity1week202309.Manager
         private enum TitleSceneState
         {
             Waiting,
-            Working
+            Working,
+            Transitioning
         }
         private TitleSceneState _state = TitleSceneState.Waiting;
         public bool IsWorking { get { return _state == TitleSceneState.Working; } }
@@ -27,6 +30,7 @@ namespace unity1week202309.Manager
         void Update() {
             WatchSceneState();
         }
+        
         public override void WatchSceneState() {
             switch (_state) {
                 // 徐々にLogoをFade outし, 完了するとWorkingへ
@@ -36,10 +40,18 @@ namespace unity1week202309.Manager
                 case TitleSceneState.Working:
                     // スペースキー入力でMainシーンへ遷移
                     if (Input.GetKeyDown(KeyCode.Space)) {
-                        SceneTransitionManager.Instance.ChangeScene(Scene.Main);
+                        ChangeSceneAsync(this.GetCancellationTokenOnDestroy()).Forget();
+                        _state = TitleSceneState.Transitioning;
                     }
                     break;
+                case TitleSceneState.Transitioning:
+                    break;
             }
+        }
+
+        private async UniTaskVoid ChangeSceneAsync(CancellationToken token) {
+            await UniTask.WaitUntil(() => true, cancellationToken: token);
+            SceneTransitionManager.Instance.ChangeScene(Scene.Main);
         }
     }
 }
