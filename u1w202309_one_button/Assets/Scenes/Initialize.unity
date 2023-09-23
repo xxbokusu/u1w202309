@@ -333,7 +333,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79fddf43dced43ff8924b1f6dcce147c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _configScriptableObject: {fileID: 11400000, guid: 1cebaf15b6db9c34b83e1418c658d542, type: 2}
+  configScriptableObject: {fileID: 11400000, guid: 1cebaf15b6db9c34b83e1418c658d542, type: 2}
 --- !u!4 &487396382
 Transform:
   m_ObjectHideFlags: 0

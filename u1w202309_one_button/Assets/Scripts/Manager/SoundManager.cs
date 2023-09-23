@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using ScriptableObject;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Serialization;
 
 namespace unity1week202309.Manager {
     /*
@@ -44,7 +45,7 @@ namespace unity1week202309.Manager {
         private float _bgmVolumeBase = 0.0f;
 
         // ScriptableObjectから音量の倍率を取得する
-        [SerializeField] private ConfigScriptableObject _configScriptableObject;
+        [SerializeField] private ConfigScriptableObject configScriptableObject;
 
         void Start() {
             if (Instance == null) {
@@ -55,7 +56,7 @@ namespace unity1week202309.Manager {
                 Destroy(gameObject);
             }
 
-            if (_configScriptableObject == null) {
+            if (configScriptableObject == null) {
                 Debug.Util.LogError("SoundManager::Start()::configScriptableObject is null");
                 return;
             }
@@ -139,7 +140,7 @@ namespace unity1week202309.Manager {
             return true;
         }
         private float ReflectVolumeRate(float volume) {
-            return volume * _configScriptableObject.GetBGMVolumeRate();
+            return volume * configScriptableObject.GetBGMVolumeRate();
         }
 
         // 再生中のaudioSourceの音量を変更する
@@ -148,7 +149,7 @@ namespace unity1week202309.Manager {
                 return;
             }
 
-            Debug.Util.LogFormat("SoundManager::ResetBGMVolume()::Reset BGM Volume to {0}", _configScriptableObject.GetBGMVolumeRate());
+            Debug.Util.LogFormat("SoundManager::ResetBGMVolume()::Reset BGM Volume to {0}", configScriptableObject.GetBGMVolumeRate());
             foreach (var audioSource in _audioSourceDictionary.Values) {
                 audioSource.volume = ReflectVolumeRate(_bgmVolumeBase);
             }
