@@ -1,9 +1,9 @@
-using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using unity1week202309.Controller;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace unity1week202309.Manager {
     /*
@@ -15,11 +15,11 @@ namespace unity1week202309.Manager {
     class MainSceneManager : GameSceneManager {
         GameObject _unityChan;
         private GirlController _girlController;
-        [SerializeField]Camera _camera;
+        [SerializeField] private CameraViewController _cameraViewController;
 
         void Start() {
-            if (_camera == null) {
-                Debug.Util.LogError("MainSceneManager::Start()::_camera is null");
+            if (_cameraViewController == null) {
+                Debug.Util.LogError("MainSceneManager::Start()::_cameraViewController is null");
                 return;
             }
             Initialize();
@@ -42,16 +42,7 @@ namespace unity1week202309.Manager {
                 Debug.Util.LogError("MainSceneManager::Initialize()::_girlController is null");
                 return;
             }
-        }
-
-        private async void Update() {
-            if (!_girlController.ParamIsWalking) return;
-
-            var moveVector = new Vector3(1, 0, 0);
-            if (_girlController.ParamIsRunning) moveVector *= 2;
-
-            _camera.transform.DOMove(moveVector, 1).SetRelative(true);
-            await UniTask.Delay(1000);
+            _cameraViewController.SetCharaTransform(_unityChan.transform);
         }
         
         private async UniTaskVoid TransitionAsync(CancellationToken token) {

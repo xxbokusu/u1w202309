@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -13,19 +12,22 @@ namespace unity1week202309.Controller {
             Running,
         }
 
-        private Dictionary<GirlState, string> StateNameByState = new() {
+        private readonly Dictionary<GirlState, string> _stateNameByState = new() {
             { GirlState.Walking, "WALK00_F" },
             { GirlState.Running, "RUN00_F" },
         };
+
         private Transform _charaTransform;
         private Animator _animator;
-        private bool paramIsWalking = false;
-        public bool ParamIsWalking => paramIsWalking;
-        public bool IsWalkingState => _animator.GetCurrentAnimatorStateInfo(0).IsName(StateNameByState[GirlState.Walking]);
+        public bool ParamIsWalking { get; private set; } = false;
 
-        private bool paramIsRunning = false;
-        public bool ParamIsRunning => paramIsRunning;
-        public bool IsRunningState => _animator.GetCurrentAnimatorStateInfo(0).IsName(StateNameByState[GirlState.Running]);
+        public bool IsWalkingState =>
+            _animator.GetCurrentAnimatorStateInfo(0).IsName(_stateNameByState[GirlState.Walking]);
+
+        public bool ParamIsRunning { get; private set; } = false;
+
+        public bool IsRunningState =>
+            _animator.GetCurrentAnimatorStateInfo(0).IsName(_stateNameByState[GirlState.Running]);
 
         void Start() {
             _animator = GetComponent<Animator>();
@@ -34,11 +36,13 @@ namespace unity1week202309.Controller {
                 Debug.Util.LogError("GirlController::Start()::_animator is null");
                 return;
             }
+
             if (_charaTransform == null) {
                 Debug.Util.LogError("GirlController::Start()::_charaTransform is null");
                 return;
             }
-            ChangeStateByInputAsync(this.GetCancellationTokenOnDestroy());
+
+            ChangeStateByInputAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
 
         private async void Update() {
@@ -51,24 +55,22 @@ namespace unity1week202309.Controller {
             await UniTask.Delay(1000);
         }
 
-        private async void ChangeStateByInputAsync(CancellationToken token) {
-            while (true) {
-                await UniTask.WaitUntil(() => Input.GetKeyUp(KeyCode.Space), cancellationToken: token);
-                paramIsWalking = true;
-                _animator.SetBool("IsWalking", paramIsWalking);
-            
-                await UniTask.WaitUntil(() => Input.GetKeyUp(KeyCode.Space), cancellationToken: token);
-                paramIsRunning = true;
-                _animator.SetBool("IsRunning", paramIsRunning);
-            
-                await UniTask.WaitUntil(() => Input.GetKeyUp(KeyCode.Space), cancellationToken: token);
-                paramIsRunning = false;
-                _animator.SetBool("IsRunning", paramIsRunning);
-            
-                await UniTask.WaitUntil(() => Input.GetKeyUp(KeyCode.Space), cancellationToken: token);
-                paramIsWalking = false;
-                _animator.SetBool("IsWalking", paramIsWalking);
-            }
+        private async UniTaskVoid ChangeStateByInputAsync(CancellationToken token) {
+            await UniTask.WaitUntil(() => Input.GetKeyUp(KeyCode.Space), cancellationToken: token);
+            ParamIsWalking = true;
+            _animator.SetBool("IsWalking", ParamIsWalking);
+
+            await UniTask.WaitUntil(() => Input.GetKeyUp(KeyCode.Space), cancellationToken: token);
+            ParamIsRunning = true;
+            _animator.SetBool("IsRunning", ParamIsRunning);
+
+            await UniTask.WaitUntil(() => Input.GetKeyUp(KeyCode.Space), cancellationToken: token);
+            ParamIsRunning = false;
+            _animator.SetBool("IsRunning", ParamIsRunning);
+
+            await UniTask.WaitUntil(() => Input.GetKeyUp(KeyCode.Space), cancellationToken: token);
+            ParamIsWalking = false;
+            _animator.SetBool("IsWalking", ParamIsWalking);
         }
     }
 }
