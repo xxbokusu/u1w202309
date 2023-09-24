@@ -32,10 +32,12 @@ namespace unity1week202309.Manager {
 
         private Dictionary<string, AudioClip> _bgmDictionary = new() {
             { "Sparrow-Real_Ambi01-1", null },
+            { "Picnic-Xy02-2(Slow)", null },
         };
 
         private Dictionary<string, AudioClip> _seDictionary = new() {
-            { "Crow-Real_Ambi01-1_part", null }
+            { "Crow-Real_part", null },
+            { "Bush_Warbler_part", null },
         };
 
         private Dictionary<string, AudioSource> _audioSourceDictionary = new();
@@ -46,7 +48,7 @@ namespace unity1week202309.Manager {
         // ScriptableObjectから音量の倍率を取得する
         [SerializeField] private ConfigScriptableObject configScriptableObject;
 
-        void Start() {
+        private void Start() {
             if (Instance == null) {
                 Instance = this;
                 DontDestroyOnLoad(gameObject);
@@ -138,6 +140,7 @@ namespace unity1week202309.Manager {
 
             return true;
         }
+
         private float ReflectVolumeRate(float volume) {
             return volume * configScriptableObject.GetBGMVolumeRate();
         }
@@ -148,7 +151,8 @@ namespace unity1week202309.Manager {
                 return;
             }
 
-            Debug.Util.LogFormat("SoundManager::ResetBGMVolume()::Reset BGM Volume to {0}", configScriptableObject.GetBGMVolumeRate());
+            Debug.Util.LogFormat("SoundManager::ResetBGMVolume()::Reset BGM Volume to {0}",
+                configScriptableObject.GetBGMVolumeRate());
             foreach (var audioSource in _audioSourceDictionary.Values) {
                 audioSource.volume = ReflectVolumeRate(_bgmVolumeBase);
             }
@@ -204,7 +208,7 @@ namespace unity1week202309.Manager {
                 return;
             }
 
-            audioSource.volume = ReflectVolumeRate(_bgmVolumeBase);
+            audioSource.volume = ReflectVolumeRate(_bgmVolumeBase) * 2;
             audioSource.PlayOneShot(_seDictionary[seName]);
         }
     }

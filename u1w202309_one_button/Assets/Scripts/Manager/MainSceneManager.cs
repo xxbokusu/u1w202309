@@ -60,6 +60,7 @@ namespace unity1week202309.Manager {
                 return;
             }
 
+            SoundManager.Instance.PlayBGM("Picnic-Xy02-2(Slow)");
             var groundCube = ObjectsManager.Instance.GetObject("Prefab/GroundCube");
             var unityChan = ObjectsManager.Instance.GetObject("Prefab/unitychan_dynamic");
             if (unityChan == null) {
@@ -84,9 +85,8 @@ namespace unity1week202309.Manager {
 
             await UniTask.WaitUntil(() => playingResource <= 0.0f, cancellationToken: token);
             _currentState = MainSceneState.Result;
-            SoundManager.Instance.PlaySE("Crow-Real_Ambi01-1_part");
-
-            await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.RightShift) && CanTransition(), cancellationToken: token);
+            SoundManager.Instance.PlaySE("Crow-Real_part");
+            SoundManager.Instance.StopBGM("Picnic-Xy02-2(Slow)");
             SceneTransitionManager.Instance.ChangeScene(Scene.Result);
         }
     }

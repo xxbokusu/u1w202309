@@ -45,6 +45,8 @@ namespace unity1week202309.Manager
 
             await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space), cancellationToken: token);
             _state = TitleSceneState.Transitioning;
+            SoundManager.Instance.StopBGM("Sparrow-Real_Ambi01-1");
+            SoundManager.Instance.PlaySE("Bush_Warbler_part");
             SceneTransitionManager.Instance.ChangeScene(Scene.Main);
         }
     }
