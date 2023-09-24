@@ -60,7 +60,7 @@ namespace unity1week202309.Manager {
             _currentState = MainSceneState.Playing;
             
             _currentState = MainSceneState.Result;
-            await UniTask.WaitUntil(() => Input.GetMouseButtonDown(0) && CanTransition(), cancellationToken: token);
+            await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.RightShift) && CanTransition(), cancellationToken: token);
             SceneTransitionManager.Instance.ChangeScene(Scene.Result);
         }
     }
