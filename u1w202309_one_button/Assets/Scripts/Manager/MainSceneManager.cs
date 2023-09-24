@@ -13,11 +13,21 @@ namespace unity1week202309.Manager {
      * </summery>
      */
     class MainSceneManager : GameSceneManager {
+        private enum MainSceneState {
+            Initialize,
+            Playing,
+            Result,
+        }
+        private MainSceneState _currentState = MainSceneState.Initialize;
+        private bool CanTransition() {
+            return _currentState == MainSceneState.Result;
+        }
+
         GameObject _unityChan;
         private GirlController _girlController;
         [SerializeField] private CameraViewController _cameraViewController;
 
-        void Start() {
+        private void Start() {
             if (_cameraViewController == null) {
                 Debug.Util.LogError("MainSceneManager::Start()::_cameraViewController is null");
                 return;
@@ -46,7 +56,11 @@ namespace unity1week202309.Manager {
         }
         
         private async UniTaskVoid TransitionAsync(CancellationToken token) {
-            await UniTask.WaitUntil(() => Input.GetMouseButtonDown(0), cancellationToken: token);
+            await UniTask.WaitUntil(() => !SceneTransitionManager.Instance.IsTransition, cancellationToken: token);
+            _currentState = MainSceneState.Playing;
+            
+            _currentState = MainSceneState.Result;
+            await UniTask.WaitUntil(() => Input.GetMouseButtonDown(0) && CanTransition(), cancellationToken: token);
             SceneTransitionManager.Instance.ChangeScene(Scene.Result);
         }
     }

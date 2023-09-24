@@ -1,7 +1,8 @@
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace unity1week202309.Manager
-{
+namespace unity1week202309.Manager {
     /*
      * <summery>
      * リザルトシーンの進行を管理する
@@ -9,22 +10,29 @@ namespace unity1week202309.Manager
      * https://help.unityroom.com/how-to-implement-scoreboard
      * </summery>
      */
-    class ResultSceneManager: GameSceneManager
-    {
+    class ResultSceneManager : GameSceneManager {
+        private enum ResultSceneState {
+            Initialize,
+            Working,
+            Transitioning,
+        }
+        private ResultSceneState _state = ResultSceneState.Initialize;
         void Start() {
             Initialize();
-        }
-        public override void Initialize() {
-            
+            ChangeSceneAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
 
-        void Update() {
-            WatchSceneState();
+        public override void Initialize() {
         }
-        private void WatchSceneState() {
-            if (Input.GetMouseButtonDown(0)) {
-                SceneTransitionManager.Instance.ChangeScene(Scene.Title);
-            }
+        
+        private async UniTaskVoid ChangeSceneAsync(CancellationToken token) {
+            await UniTask.WaitUntil(() => !SceneTransitionManager.Instance.IsTransition, cancellationToken: token);
+            _state = ResultSceneState.Working;
+
+            await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space), cancellationToken: token);
+            _state = ResultSceneState.Transitioning;
+            SceneTransitionManager.Instance.ChangeScene(Scene.Main);
         }
+
     }
 }

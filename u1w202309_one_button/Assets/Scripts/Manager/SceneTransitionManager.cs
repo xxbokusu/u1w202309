@@ -86,10 +86,12 @@ namespace unity1week202309.Manager
             _isTransition = true;
 
             await UniTask.WaitUntil(() => progress.isDone, cancellationToken: token);
-            _isTransition = false;
             SceneManager.SetActiveScene(SceneManager.GetSceneByName(_nextScene.ToString()));
             fadeCanvas.SceneFadeInAsync(token).Forget();
             _currentScene = targetScene;
+            
+            await UniTask.WaitUntil(() => !fadeCanvas.IsInFade, cancellationToken: token);
+            _isTransition = false;
         }
     }
 }

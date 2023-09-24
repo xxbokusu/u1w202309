@@ -12,6 +12,7 @@ namespace unity1week202309.Object {
         public bool IsFadeIn => _isFadeIn;
         private bool _isFadeOut = false;
         public bool IsFadeOut => _isFadeOut;
+        public bool IsInFade => _isFadeIn || _isFadeOut;
 
         // フェードを管理するパラメータ
         public float fadeAlpha;

@@ -13,12 +13,14 @@ namespace unity1week202309.Controller {
         }
 
         private readonly Dictionary<GirlState, string> _stateNameByState = new() {
+            { GirlState.Waiting, "WAIT00" },
             { GirlState.Walking, "WALK00_F" },
             { GirlState.Running, "RUN00_F" },
         };
 
         private Transform _charaTransform;
         private Animator _animator;
+        public bool IsWaitingState => _animator.GetCurrentAnimatorStateInfo(0).IsName(_stateNameByState[GirlState.Waiting]);
         public bool ParamIsWalking { get; private set; } = false;
 
         public bool IsWalkingState =>
@@ -46,9 +48,9 @@ namespace unity1week202309.Controller {
         }
 
         private async void Update() {
-            if (!IsWalkingState) return;
+            if (IsWaitingState) return;
 
-            var moveVector = new Vector3(1, 0, 0);
+            var moveVector = new Vector3(0.5f, 0, 0);
             if (IsRunningState) moveVector *= 2;
 
             _charaTransform.DOMove(moveVector, 1).SetRelative(true);
@@ -56,21 +58,23 @@ namespace unity1week202309.Controller {
         }
 
         private async UniTaskVoid ChangeStateByInputAsync(CancellationToken token) {
-            await UniTask.WaitUntil(() => Input.GetKeyUp(KeyCode.Space), cancellationToken: token);
-            ParamIsWalking = true;
-            _animator.SetBool("IsWalking", ParamIsWalking);
+            while (true) {
+                await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space), cancellationToken: token);
+                ParamIsWalking = true;
+                _animator.SetBool("IsWalking", ParamIsWalking);
 
-            await UniTask.WaitUntil(() => Input.GetKeyUp(KeyCode.Space), cancellationToken: token);
-            ParamIsRunning = true;
-            _animator.SetBool("IsRunning", ParamIsRunning);
+                await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space), cancellationToken: token);
+                ParamIsRunning = true;
+                _animator.SetBool("IsRunning", ParamIsRunning);
 
-            await UniTask.WaitUntil(() => Input.GetKeyUp(KeyCode.Space), cancellationToken: token);
-            ParamIsRunning = false;
-            _animator.SetBool("IsRunning", ParamIsRunning);
+                await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space), cancellationToken: token);
+                ParamIsRunning = false;
+                _animator.SetBool("IsRunning", ParamIsRunning);
 
-            await UniTask.WaitUntil(() => Input.GetKeyUp(KeyCode.Space), cancellationToken: token);
-            ParamIsWalking = false;
-            _animator.SetBool("IsWalking", ParamIsWalking);
+                await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space), cancellationToken: token);
+                ParamIsWalking = false;
+                _animator.SetBool("IsWalking", ParamIsWalking);
+            }
         }
     }
 }
