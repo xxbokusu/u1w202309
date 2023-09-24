@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -39,6 +40,9 @@ namespace unity1week202309.Manager {
         // Result時に表示するPanel
         [SerializeField] private GameObject resultPanel;
         [SerializeField] private TextMeshProUGUI scoreText;
+        
+        // resourceを時間に見立てて、残量に応じてDirectional Lightの向きと色を変える
+        [SerializeField] private Light directionalLight;
 
         public void WasteResource(float waste) {
             playingResource -= waste;
@@ -79,6 +83,10 @@ namespace unity1week202309.Manager {
                 Debug.Util.LogError("MainSceneManager::Start()::scoreText is null");
                 return;
             }
+            if (directionalLight == null) {
+                Debug.Util.LogError("MainSceneManager::Start()::directionalLight is null");
+                return;
+            }
 
             resultPanel.SetActive(false);
 
@@ -101,6 +109,15 @@ namespace unity1week202309.Manager {
             }
 
             _cameraViewController.SetCharaObject(_unityChan);
+        }
+
+        private void Update() {
+            if (IsResult) return;
+            // resourceを時間に見立てて、残量に応じてDirectional Lightの向きと色を変える
+            var rate = playingResource / 50.0f;
+            directionalLight.transform.rotation = Quaternion.Euler(90.0f * rate, 0.0f, 0.0f);
+            // 残量が経るにつれて夕焼け色(赤)になる
+            directionalLight.color = new Color(1.0f, 0.5f + 0.5f * rate, 0.5f + 0.5f * rate);
         }
 
         private async UniTaskVoid TransitionAsync(CancellationToken token) {

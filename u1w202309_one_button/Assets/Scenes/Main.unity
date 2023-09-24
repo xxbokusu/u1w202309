@@ -475,6 +475,7 @@ MonoBehaviour:
   playingResource: 50
   resultPanel: {fileID: 922324555}
   scoreText: {fileID: 1443209349}
+  directionalLight: {fileID: 1435564683}
   scoreScriptableObject: {fileID: 11400000, guid: f835981f9e5e5144194bd12fb8fd219f, type: 2}
 --- !u!4 &1282794337
 Transform:
