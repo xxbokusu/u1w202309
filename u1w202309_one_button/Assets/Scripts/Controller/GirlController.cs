@@ -44,6 +44,7 @@ namespace unity1week202309.Controller {
         public bool IsResulting => _state == GirlState.Resulting;
 
         private MainSceneManager _mainSceneManager;
+        private PowerChargerController _powerChargerController;
         
         void Start() {
             _animator = GetComponent<Animator>();
@@ -64,13 +65,17 @@ namespace unity1week202309.Controller {
                 return;
             }
 
-            ChangeStateByInputAsync(this.GetCancellationTokenOnDestroy()).Forget();
+            _powerChargerController = GameObject.Find("PowerCharger").GetComponent<PowerChargerController>();
+            if (_powerChargerController == null) {
+                Debug.Util.LogError("GirlController::Start()::_powerChargerController is null");
+                return;
+            }
+
+            // ChangeStateByInputAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
 
         private async void Update() {
             _mainSceneManager.WasteResource(_wasteResourceByState[_state] * Time.deltaTime);
-            if (IsWaitingState) return;
-            if (IsResulting) return;
             if (_mainSceneManager.IsResult) {
                 _state = GirlState.Resulting;
                 ParamIsWalking = false;
@@ -79,7 +84,31 @@ namespace unity1week202309.Controller {
                 _animator.SetBool("IsRunning", ParamIsRunning);
                 return;
             }
-            
+
+            switch (_powerChargerController.Power) {
+                case > 20.0f:
+                    ParamIsWalking = true;
+                    ParamIsRunning = true;
+                    _state = GirlState.Running;
+                    _animator.SetBool("IsRunning", ParamIsRunning);
+                    break;
+                case > 10.0f:
+                    ParamIsWalking = true;
+                    ParamIsRunning = false;
+                    _state = GirlState.Walking;
+                    _animator.SetBool("IsWalking", ParamIsWalking);
+                    break;
+                default:
+                    ParamIsWalking = false;
+                    ParamIsRunning = false;
+                    _state = GirlState.Waiting;
+                    _animator.SetBool("IsWalking", ParamIsWalking);
+                    _animator.SetBool("IsRunning", ParamIsRunning);
+                    break;
+            }
+            if (IsWaitingState) return;
+            if (IsResulting) return;
+
             var moveVector = new Vector3(0.5f, 0, 0);
             if (IsRunningState) moveVector *= 3;
 

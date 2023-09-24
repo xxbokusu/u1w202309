@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
@@ -9,6 +7,10 @@ namespace unity1week202309.Controller {
     public class PowerChargerController : MonoBehaviour {
         private RectTransform _heartTransform;
         private RectTransform _thunderTransform;
+        
+        // chargeされたパワー. 振動の度合いに影響する
+        private float _power = 0.0f;
+        public float Power => _power;
         
         void Start() {
             _heartTransform = this.transform.GetChild(0).transform as RectTransform;
@@ -25,15 +27,21 @@ namespace unity1week202309.Controller {
             ChargeByInputAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
         
+        private void Update() {
+            // 時間に応じてパワーは減衰する
+            _power -= Time.deltaTime / 2;
+        }
+        
         private async UniTaskVoid ChargeByInputAsync(CancellationToken token) {
             while (token.IsCancellationRequested == false) {
                 await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space), cancellationToken: token);
             
                 // アタッチした画像を振動させる by Dotween
                 _thunderTransform.gameObject.SetActive(true);
-                this.transform.DOShakePosition(0.5f, 10.0f, 90, 90, false, true);
-                // 振動が止まるのを待って消す
-                await UniTask.WaitUntil(() => !DOTween.IsTweening(this.transform), cancellationToken: token);
+                _power += 2.0f;
+                this.transform.DOShakePosition(_power, strength: _power, vibrato: 10, randomness: 90, snapping: false, fadeOut: true);
+                // Power charge span
+                await UniTask.Delay(500, cancellationToken: token);
                 _thunderTransform.gameObject.SetActive(false);
             }
         }
