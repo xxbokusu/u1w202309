@@ -100,7 +100,7 @@ namespace unity1week202309.Manager {
                 return;
             }
 
-            _cameraViewController.SetCharaTransform(_unityChan.transform);
+            _cameraViewController.SetCharaObject(_unityChan);
         }
 
         private async UniTaskVoid TransitionAsync(CancellationToken token) {

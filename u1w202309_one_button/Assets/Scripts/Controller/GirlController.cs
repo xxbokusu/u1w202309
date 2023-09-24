@@ -133,5 +133,26 @@ namespace unity1week202309.Controller {
             _mainSceneManager.AddScore(moveVector.magnitude);
             await UniTask.Delay(1000);
         }
+        
+        // stateに応じてキャラのFace rigを切り替える
+        public void ChangeFaceRig() {
+            switch (_state) {
+                case GirlState.Waiting:
+                    _animator.SetTrigger("IsWaiting");
+                    break;
+                case GirlState.Walking:
+                    _animator.SetTrigger("IsWalking");
+                    break;
+                case GirlState.Running:
+                    _animator.SetTrigger("IsRunning");
+                    break;
+                case GirlState.Exhausted:
+                    _animator.SetTrigger("IsExthausted");
+                    break;
+                case GirlState.Resulting:
+                    _animator.SetTrigger("IsResulting");
+                    break;
+            }
+        }
     }
 }

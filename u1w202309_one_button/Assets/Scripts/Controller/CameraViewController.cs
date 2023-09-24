@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -13,9 +14,12 @@ namespace unity1week202309.Controller {
      */
     public class CameraViewController : MonoBehaviour {
         private Camera _camera;
+        private GameObject _charaObject;
         private Transform _charaTransform;
         private Vector3 _prePosition;
         private bool _isInitialized = false;
+        
+        private GirlController _girlController;
         private void Start() {
             _camera = GetComponent<Camera>();
             if (_camera == null) {
@@ -30,10 +34,17 @@ namespace unity1week202309.Controller {
             
             _isInitialized = true;
             _prePosition = _charaTransform.position;
+            MoveResultViewAsync(token).Forget();
         }
         
-        public void SetCharaTransform(Transform charaTransform) {
-            _charaTransform = charaTransform;
+        public void SetCharaObject(GameObject charaObject) {
+            _charaObject = charaObject;
+            _charaTransform = _charaObject.transform;
+            _girlController = _charaObject.GetComponent<GirlController>();
+            if (_girlController == null) {
+                Debug.Util.LogError("CameraViewController::SetCharaObject()::_girlController is null");
+                return;
+            }
         }
         
         private void Update() {
@@ -44,6 +55,13 @@ namespace unity1week202309.Controller {
             var diff = charaPosition - _prePosition;
             _camera.transform.position += diff;
             _prePosition = charaPosition;
+        }
+
+        private async UniTaskVoid MoveResultViewAsync(CancellationToken token) {
+            await UniTask.WaitUntil(() => _girlController.IsResulting, cancellationToken: token);
+            
+            _camera.transform.DOMove(new Vector3(_charaTransform.position.x + 2.2f, 2.8f, _charaTransform.position.z + -0.35f), 1.0f);
+            // _camera.transform.DOMove(new Vector3(-4.5f, 0.0f, 2.3f), 1.0f).SetRelative(true);
         }
     }
 }
