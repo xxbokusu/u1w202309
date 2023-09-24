@@ -1,6 +1,8 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using ScriptableObject;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace unity1week202309.Manager {
     /*
@@ -17,12 +19,18 @@ namespace unity1week202309.Manager {
             Transitioning,
         }
         private ResultSceneState _state = ResultSceneState.Initialize;
-        void Start() {
+        
+        [SerializeField] private ScoreScriptableObject scoreScriptableObject;
+        private void Start() {
             Initialize();
             ChangeSceneAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
 
         public override void Initialize() {
+            if (scoreScriptableObject == null) {
+                Debug.Util.LogError("ResultSceneManager::Start()::scoreScriptableObject is null");
+                return;
+            }
         }
         
         private async UniTaskVoid ChangeSceneAsync(CancellationToken token) {

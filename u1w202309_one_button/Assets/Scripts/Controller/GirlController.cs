@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using ScriptableObject;
 using unity1week202309.Manager;
 using UnityEngine;
 
@@ -83,6 +84,8 @@ namespace unity1week202309.Controller {
             if (IsRunningState) moveVector *= 2;
 
             _charaTransform.DOMove(moveVector, 1).SetRelative(true);
+            // 移動距離をintに変換してスコアに加算する
+            _mainSceneManager.AddScore((int)moveVector.magnitude);
             await UniTask.Delay(1000);
         }
 

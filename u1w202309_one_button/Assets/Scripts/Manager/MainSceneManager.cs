@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using ScriptableObject;
 using unity1week202309.Controller;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.Serialization;
 
 namespace unity1week202309.Manager {
@@ -37,17 +39,27 @@ namespace unity1week202309.Manager {
             }
         }
         public bool IsResourceEmpty => playingResource <= 0.0f;
+        
+        [SerializeField]private ScoreScriptableObject scoreScriptableObject;
+        public void AddScore(int score) {
+            scoreScriptableObject.AddScore(score);
+        }
 
         private void Start() {
-            if (_cameraViewController == null) {
-                Debug.Util.LogError("MainSceneManager::Start()::_cameraViewController is null");
-                return;
-            }
             Initialize();
             TransitionAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
 
         public override void Initialize() {
+            if (_cameraViewController == null) {
+                Debug.Util.LogError("MainSceneManager::Start()::_cameraViewController is null");
+                return;
+            }
+            if (scoreScriptableObject == null) {
+                Debug.Util.LogError("MainSceneManager::Start()::scoreScriptableObject is null");
+                return;
+            }
+
             var groundCube = ObjectsManager.Instance.GetObject("Prefab/GroundCube");
             var unityChan = ObjectsManager.Instance.GetObject("Prefab/unitychan_dynamic");
             if (unityChan == null) {

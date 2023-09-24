@@ -1,6 +1,8 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using ScriptableObject;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
 
 namespace unity1week202309.Manager
@@ -19,14 +21,22 @@ namespace unity1week202309.Manager
         }
         private TitleSceneState _state = TitleSceneState.Waiting;
         public bool IsWorking { get { return _state == TitleSceneState.Working; } }
+        
+        [SerializeField] private ScoreScriptableObject scoreScriptableObject;
 
-        void Start() {
+        private void Start() {
             Initialize();
             ChangeSceneAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
         public override void Initialize() {
             _state = TitleSceneState.Waiting;
             SoundManager.Instance.PlayBGM("Sparrow-Real_Ambi01-1");
+            
+            if (scoreScriptableObject == null) {
+                Debug.Util.LogError("TitleSceneManager::Initialize()::scoreScriptableObject is null");
+                return;
+            }
+            scoreScriptableObject.Score = 0;
         }
 
         private async UniTaskVoid ChangeSceneAsync(CancellationToken token) {

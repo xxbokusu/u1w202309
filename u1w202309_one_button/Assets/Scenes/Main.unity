@@ -153,6 +153,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cameraViewController: {fileID: 2084236720}
+  playingResource: 50
+  scoreScriptableObject: {fileID: 11400000, guid: f835981f9e5e5144194bd12fb8fd219f, type: 2}
 --- !u!4 &1282794337
 Transform:
   m_ObjectHideFlags: 0
