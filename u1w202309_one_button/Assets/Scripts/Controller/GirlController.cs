@@ -12,6 +12,7 @@ namespace unity1week202309.Controller {
             Waiting,
             Walking,
             Running,
+            Exhausted,
             Resulting
         }
         private GirlState _state = GirlState.Waiting;
@@ -19,13 +20,15 @@ namespace unity1week202309.Controller {
             { GirlState.Waiting , 2.0f},
             { GirlState.Walking , 3.0f},
             { GirlState.Running , 4.0f},
+            { GirlState.Exhausted , 4.0f},
             { GirlState.Resulting , 0.0f},
         };
 
         private readonly Dictionary<GirlState, string> _stateNameByState = new() {
-            { GirlState.Waiting, "WAIT00" },
+            { GirlState.Waiting, "WAIT02" },
             { GirlState.Walking, "WALK00_F" },
             { GirlState.Running, "RUN00_F" },
+            { GirlState.Exhausted, "REFLESH00" },
         };
 
         private Transform _charaTransform;
@@ -38,6 +41,7 @@ namespace unity1week202309.Controller {
 
         public bool ParamIsRunning { get; private set; } = false;
 
+        private bool ParamIsExhausted { get; set; } = false;
         public bool IsRunningState =>
             _animator.GetCurrentAnimatorStateInfo(0).IsName(_stateNameByState[GirlState.Running]);
 
@@ -70,8 +74,6 @@ namespace unity1week202309.Controller {
                 Debug.Util.LogError("GirlController::Start()::_powerChargerController is null");
                 return;
             }
-
-            // ChangeStateByInputAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
 
         private async void Update() {
@@ -85,14 +87,28 @@ namespace unity1week202309.Controller {
                 return;
             }
 
+            if (_powerChargerController.Power > 25.0f) {
+                _state = GirlState.Exhausted;
+                ParamIsExhausted = true;
+                _animator.SetBool("IsExthausted", ParamIsExhausted);
+            }
+            if (ParamIsExhausted) {
+                if (_powerChargerController.Power < 5.0f) {
+                    ParamIsExhausted = false;
+                    _animator.SetBool("IsExthausted", ParamIsExhausted);
+                } else {
+                    return;
+                }
+            }
+
             switch (_powerChargerController.Power) {
-                case > 20.0f:
+                case > 15.0f:
                     ParamIsWalking = true;
                     ParamIsRunning = true;
                     _state = GirlState.Running;
                     _animator.SetBool("IsRunning", ParamIsRunning);
                     break;
-                case > 10.0f:
+                case > 5.0f:
                     ParamIsWalking = true;
                     ParamIsRunning = false;
                     _state = GirlState.Walking;
@@ -116,30 +132,6 @@ namespace unity1week202309.Controller {
             // 移動距離をintに変換してスコアに加算する
             _mainSceneManager.AddScore(moveVector.magnitude);
             await UniTask.Delay(1000);
-        }
-
-        private async UniTaskVoid ChangeStateByInputAsync(CancellationToken token) {
-            while (true) {
-                await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space) && !IsResulting, cancellationToken: token);
-                ParamIsWalking = true;
-                _state = GirlState.Walking;
-                _animator.SetBool("IsWalking", ParamIsWalking);
-
-                await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space) && !IsResulting, cancellationToken: token);
-                ParamIsRunning = true;
-                _state = GirlState.Running;
-                _animator.SetBool("IsRunning", ParamIsRunning);
-
-                await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space) && !IsResulting, cancellationToken: token);
-                ParamIsRunning = false;
-                _state = GirlState.Walking;
-                _animator.SetBool("IsRunning", ParamIsRunning);
-
-                await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space) && !IsResulting, cancellationToken: token);
-                ParamIsWalking = false;
-                _state = GirlState.Waiting;
-                _animator.SetBool("IsWalking", ParamIsWalking);
-            }
         }
     }
 }

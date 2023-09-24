@@ -9,10 +9,10 @@ namespace unity1week202309.Controller {
         private RectTransform _thunderTransform;
         
         // chargeされたパワー. 振動の度合いに影響する
-        private float _power = 0.0f;
+        [SerializeField] private float _power = 0.0f;
         public float Power => _power;
         
-        void Start() {
+        private void Start() {
             _heartTransform = this.transform.GetChild(0).transform as RectTransform;
             _thunderTransform = this.transform.GetChild(1).transform as RectTransform;
             if (_heartTransform == null) {
@@ -29,12 +29,15 @@ namespace unity1week202309.Controller {
         
         private void Update() {
             // 時間に応じてパワーは減衰する
-            _power -= Time.deltaTime / 2;
+            _power -= Time.deltaTime;
+            if (_power < 0.0f) {
+                _power = 0.0f;
+            }
         }
         
         private async UniTaskVoid ChargeByInputAsync(CancellationToken token) {
             while (token.IsCancellationRequested == false) {
-                await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space), cancellationToken: token);
+                await UniTask.WaitUntil(() => Input.anyKeyDown, cancellationToken: token);
             
                 // アタッチした画像を振動させる by Dotween
                 _thunderTransform.gameObject.SetActive(true);
