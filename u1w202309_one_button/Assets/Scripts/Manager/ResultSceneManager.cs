@@ -18,7 +18,6 @@ namespace unity1week202309.Manager {
             Working,
             Transitioning,
         }
-        private ResultSceneState _state = ResultSceneState.Initialize;
         
         [SerializeField] private ScoreScriptableObject scoreScriptableObject;
         private void Start() {
@@ -35,10 +34,8 @@ namespace unity1week202309.Manager {
         
         private async UniTaskVoid ChangeSceneAsync(CancellationToken token) {
             await UniTask.WaitUntil(() => !SceneTransitionManager.Instance.IsTransition, cancellationToken: token);
-            _state = ResultSceneState.Working;
 
             await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space), cancellationToken: token);
-            _state = ResultSceneState.Transitioning;
             SceneTransitionManager.Instance.ChangeScene(Scene.Title);
         }
 
