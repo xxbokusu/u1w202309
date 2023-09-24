@@ -34,9 +34,9 @@ namespace unity1week202309.Manager {
                 return;
             }
             
-            Instantiate(groundCube, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
+            Instantiate(groundCube, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity, transform);
             // 右向きに生成する
-            _unityChan = Instantiate(unityChan, new Vector3(0.0f, 0.5f, 0.0f), Quaternion.Euler(0.0f, 90.0f, 0.0f));
+            _unityChan = Instantiate(unityChan, new Vector3(0.0f, 0.5f, 0.0f), Quaternion.Euler(0.0f, 90.0f, 0.0f), transform);
             _girlController = _unityChan.GetComponent<GirlController>();
             if (_girlController == null) {
                 Debug.Util.LogError("MainSceneManager::Initialize()::_girlController is null");
