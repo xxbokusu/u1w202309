@@ -370,6 +370,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fbe91297a814b3e9fb3bbf7086d6433, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scoreScriptableObject: {fileID: 11400000, guid: f835981f9e5e5144194bd12fb8fd219f, type: 2}
 --- !u!4 &1417937665
 Transform:
   m_ObjectHideFlags: 0

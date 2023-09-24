@@ -1,6 +1,9 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using ScriptableObject;
 using UnityEngine;
+using UnityEngine.Assertions;
+using UnityEngine.SceneManagement;
 
 namespace unity1week202309.Manager
 {
@@ -18,39 +21,32 @@ namespace unity1week202309.Manager
         }
         private TitleSceneState _state = TitleSceneState.Waiting;
         public bool IsWorking { get { return _state == TitleSceneState.Working; } }
+        
+        [SerializeField] private ScoreScriptableObject scoreScriptableObject;
 
-        void Start() {
+        private void Start() {
             Initialize();
+            ChangeSceneAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
         public override void Initialize() {
             _state = TitleSceneState.Waiting;
             SoundManager.Instance.PlayBGM("Sparrow-Real_Ambi01-1");
-        }
-
-        void Update() {
-            WatchSceneState();
-        }
-        
-        public override void WatchSceneState() {
-            switch (_state) {
-                // 徐々にLogoをFade outし, 完了するとWorkingへ
-                case TitleSceneState.Waiting:
-                    _state = TitleSceneState.Working;
-                    break;
-                case TitleSceneState.Working:
-                    // スペースキー入力でMainシーンへ遷移
-                    if (Input.GetKeyDown(KeyCode.Space)) {
-                        ChangeSceneAsync(this.GetCancellationTokenOnDestroy()).Forget();
-                        _state = TitleSceneState.Transitioning;
-                    }
-                    break;
-                case TitleSceneState.Transitioning:
-                    break;
+            
+            if (scoreScriptableObject == null) {
+                Debug.Util.LogError("TitleSceneManager::Initialize()::scoreScriptableObject is null");
+                return;
             }
+            scoreScriptableObject.Score = 0;
         }
 
         private async UniTaskVoid ChangeSceneAsync(CancellationToken token) {
-            await UniTask.WaitUntil(() => true, cancellationToken: token);
+            await UniTask.WaitUntil(() => !SceneTransitionManager.Instance.IsTransition, cancellationToken: token);
+            _state = TitleSceneState.Working;
+
+            await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space), cancellationToken: token);
+            _state = TitleSceneState.Transitioning;
+            SoundManager.Instance.StopBGM("Sparrow-Real_Ambi01-1");
+            SoundManager.Instance.PlaySE("Bush_Warbler_part");
             SceneTransitionManager.Instance.ChangeScene(Scene.Main);
         }
     }
