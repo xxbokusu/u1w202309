@@ -81,11 +81,11 @@ namespace unity1week202309.Controller {
             }
             
             var moveVector = new Vector3(0.5f, 0, 0);
-            if (IsRunningState) moveVector *= 2;
+            if (IsRunningState) moveVector *= 3;
 
             _charaTransform.DOMove(moveVector, 1).SetRelative(true);
             // 移動距離をintに変換してスコアに加算する
-            _mainSceneManager.AddScore((int)moveVector.magnitude);
+            _mainSceneManager.AddScore(moveVector.magnitude);
             await UniTask.Delay(1000);
         }
 

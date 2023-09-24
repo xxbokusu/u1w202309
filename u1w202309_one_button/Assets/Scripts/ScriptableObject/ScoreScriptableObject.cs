@@ -10,11 +10,11 @@ namespace ScriptableObject {
      */
     [CreateAssetMenu(fileName = "Score", menuName = "ScriptableObject/Score")]
     public class ScoreScriptableObject : UnityEngine.ScriptableObject {
-        [SerializeField] private int score = 0;
-        public void AddScore(int addScore) {
+        [SerializeField] private float score = 0;
+        public void AddScore(float addScore) {
             score += addScore;
         }
-        public int Score {
+        public float Score {
             get { return score; }
             set { score = value; }
         }
