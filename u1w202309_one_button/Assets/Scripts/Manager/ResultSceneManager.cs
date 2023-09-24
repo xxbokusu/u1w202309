@@ -21,7 +21,7 @@ namespace unity1week202309.Manager
         void Update() {
             WatchSceneState();
         }
-        public override void WatchSceneState() {
+        private void WatchSceneState() {
             if (Input.GetMouseButtonDown(0)) {
                 SceneTransitionManager.Instance.ChangeScene(Scene.Title);
             }

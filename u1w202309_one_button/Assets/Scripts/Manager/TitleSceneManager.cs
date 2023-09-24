@@ -31,7 +31,7 @@ namespace unity1week202309.Manager
             WatchSceneState();
         }
         
-        public override void WatchSceneState() {
+        private void WatchSceneState() {
             switch (_state) {
                 // 徐々にLogoをFade outし, 完了するとWorkingへ
                 case TitleSceneState.Waiting:

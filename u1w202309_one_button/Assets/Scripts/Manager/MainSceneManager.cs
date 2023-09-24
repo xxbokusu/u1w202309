@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using unity1week202309.Controller;
@@ -22,6 +23,7 @@ namespace unity1week202309.Manager {
                 return;
             }
             Initialize();
+            TransitionAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
 
         public override void Initialize() {
@@ -42,25 +44,19 @@ namespace unity1week202309.Manager {
             }
         }
 
-        async void Update() {
-            WatchSceneState();
-            // unitychanの位置を表示する
-            Debug.Util.LogFormat("unitychan position: {0}", _unityChan.transform.position);
-            // unitychanを右に移動させ、カメラも追従する
-            if (!_girlController.IsWalking) return;
+        private async void Update() {
+            if (!_girlController.ParamIsWalking) return;
 
             var moveVector = new Vector3(1, 0, 0);
-            if (_girlController.IsRunning) moveVector *= 2;
+            if (_girlController.ParamIsRunning) moveVector *= 2;
 
-            _unityChan.transform.DOMove(moveVector, 1).SetRelative(true);
             _camera.transform.DOMove(moveVector, 1).SetRelative(true);
             await UniTask.Delay(1000);
         }
-
-        public override void WatchSceneState() {
-            if (Input.GetMouseButtonDown(0)) {
-                SceneTransitionManager.Instance.ChangeScene(Scene.Result);
-            }
+        
+        private async UniTaskVoid TransitionAsync(CancellationToken token) {
+            await UniTask.WaitUntil(() => Input.GetMouseButtonDown(0), cancellationToken: token);
+            SceneTransitionManager.Instance.ChangeScene(Scene.Result);
         }
     }
 }
