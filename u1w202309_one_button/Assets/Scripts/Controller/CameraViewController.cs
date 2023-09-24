@@ -30,7 +30,6 @@ namespace unity1week202309.Controller {
             
             _isInitialized = true;
             _prePosition = _charaTransform.position;
-            Debug.Util.Log("CameraViewController::InitializeAsync()::_prePosition = " + _prePosition);
         }
         
         public void SetCharaTransform(Transform charaTransform) {
