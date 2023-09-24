@@ -35,8 +35,7 @@ namespace unity1week202309.Manager {
         };
 
         private Dictionary<string, AudioClip> _seDictionary = new() {
-            { "maou_se_voice_bird01", null },
-            { "Crow-Real_Ambi01-1", null }
+            { "Crow-Real_Ambi01-1_part", null }
         };
 
         private Dictionary<string, AudioSource> _audioSourceDictionary = new();
@@ -194,14 +193,14 @@ namespace unity1week202309.Manager {
         // SEを再生する
         public void PlaySE(string seName) {
             if (!_seDictionary.ContainsKey(seName)) {
-                Debug.Util.Log("SoundManager::PlaySE()::seName is not found!");
+                Debug.Util.LogError("SoundManager::PlaySE()::seName is not found!");
                 return;
             }
 
             // 再生用のAudioSourceを取得して再生する
             AudioSource audioSource = _audioSourceDictionary[seName];
             if (audioSource == null) {
-                Debug.Util.Log("SoundManager::PlaySE()::AudioSource is not found!");
+                Debug.Util.LogError("SoundManager::PlaySE()::AudioSource is not found!");
                 return;
             }
 

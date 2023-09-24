@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
@@ -19,13 +20,23 @@ namespace unity1week202309.Manager {
             Result,
         }
         private MainSceneState _currentState = MainSceneState.Initialize;
+        public bool IsResult => _currentState == MainSceneState.Result;
         private bool CanTransition() {
-            return _currentState == MainSceneState.Result;
+            return IsResult;
         }
 
         GameObject _unityChan;
         private GirlController _girlController;
         [SerializeField] private CameraViewController _cameraViewController;
+        
+        [SerializeField] private float playingResource = 50.0f;
+        public void WasteResource(float waste) {
+            playingResource -= waste;
+            if (playingResource < 0.0f) {
+                playingResource = 0.0f;
+            }
+        }
+        public bool IsResourceEmpty => playingResource <= 0.0f;
 
         private void Start() {
             if (_cameraViewController == null) {
@@ -58,8 +69,11 @@ namespace unity1week202309.Manager {
         private async UniTaskVoid TransitionAsync(CancellationToken token) {
             await UniTask.WaitUntil(() => !SceneTransitionManager.Instance.IsTransition, cancellationToken: token);
             _currentState = MainSceneState.Playing;
-            
+
+            await UniTask.WaitUntil(() => playingResource <= 0.0f, cancellationToken: token);
             _currentState = MainSceneState.Result;
+            SoundManager.Instance.PlaySE("Crow-Real_Ambi01-1_part");
+
             await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.RightShift) && CanTransition(), cancellationToken: token);
             SceneTransitionManager.Instance.ChangeScene(Scene.Result);
         }
