@@ -31,7 +31,7 @@ namespace unity1week202309.Manager {
 
             await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space), cancellationToken: token);
             _state = ResultSceneState.Transitioning;
-            SceneTransitionManager.Instance.ChangeScene(Scene.Main);
+            SceneTransitionManager.Instance.ChangeScene(Scene.Title);
         }
 
     }
