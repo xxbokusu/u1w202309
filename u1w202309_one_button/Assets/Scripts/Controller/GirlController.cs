@@ -87,7 +87,7 @@ namespace unity1week202309.Controller {
                 return;
             }
 
-            if (_powerChargerController.Power > 25.0f) {
+            if (_powerChargerController.Power > 15.0f) {
                 _state = GirlState.Exhausted;
                 ParamIsExhausted = true;
                 _animator.SetBool("IsExthausted", ParamIsExhausted);
@@ -102,13 +102,13 @@ namespace unity1week202309.Controller {
             }
 
             switch (_powerChargerController.Power) {
-                case > 15.0f:
+                case > 10.0f:
                     ParamIsWalking = true;
                     ParamIsRunning = true;
                     _state = GirlState.Running;
                     _animator.SetBool("IsRunning", ParamIsRunning);
                     break;
-                case > 5.0f:
+                case > 2.0f:
                     ParamIsWalking = true;
                     ParamIsRunning = false;
                     _state = GirlState.Walking;

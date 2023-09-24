@@ -60,7 +60,7 @@ namespace unity1week202309.Controller {
         private async UniTaskVoid MoveResultViewAsync(CancellationToken token) {
             await UniTask.WaitUntil(() => _girlController.IsResulting, cancellationToken: token);
             
-            _camera.transform.DOMove(new Vector3(_charaTransform.position.x + 2.2f, 2.8f, _charaTransform.position.z + -0.35f), 1.0f);
+            _camera.transform.DOMove(new Vector3(_charaTransform.position.x + 2.2f, 3.5f, _charaTransform.position.z + -0.35f), 1.0f);
             // _camera.transform.DOMove(new Vector3(-4.5f, 0.0f, 2.3f), 1.0f).SetRelative(true);
         }
     }

@@ -99,6 +99,8 @@ namespace unity1week202309.Manager {
             }
 
             Instantiate(groundCube, new Vector3(-75.0f, 1.0f, -75.0f), Quaternion.identity, transform);
+            // 大地の生成が済むのを待つ
+            
             // 右向きに生成する
             _unityChan = Instantiate(unityChan, new Vector3(0.0f, 0.5f, 0.0f), Quaternion.Euler(0.0f, 90.0f, 0.0f),
                 transform);
