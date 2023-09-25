@@ -74,12 +74,14 @@ namespace unity1week202309.Controller {
                 Debug.Util.LogError("GirlController::Start()::_powerChargerController is null");
                 return;
             }
+            _powerChargerController.Activate();
         }
 
         private async void Update() {
             _mainSceneManager.WasteResource(_wasteResourceByState[_state] * Time.deltaTime);
             if (_mainSceneManager.IsResult) {
                 _state = GirlState.Resulting;
+                _powerChargerController.Deactivate();
                 ParamIsWalking = false;
                 ParamIsRunning = false;
                 _animator.SetBool("IsWalking", ParamIsWalking);
@@ -93,9 +95,10 @@ namespace unity1week202309.Controller {
                 _animator.SetBool("IsExthausted", ParamIsExhausted);
             }
             if (ParamIsExhausted) {
-                if (_powerChargerController.Power < 5.0f) {
+                if (_powerChargerController.Power < 2.0f) {
                     ParamIsExhausted = false;
                     _animator.SetBool("IsExthausted", ParamIsExhausted);
+                    _state = GirlState.Waiting;
                 } else {
                     return;
                 }

@@ -1,6 +1,7 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using ScriptableObject;
+using unity1week202309.Controller;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
@@ -23,6 +24,7 @@ namespace unity1week202309.Manager
         public bool IsWorking { get { return _state == TitleSceneState.Working; } }
         
         [SerializeField] private ScoreScriptableObject scoreScriptableObject;
+        [SerializeField] private PowerChargerController powerChargerController;
 
         private void Start() {
             Initialize();
@@ -37,11 +39,17 @@ namespace unity1week202309.Manager
                 return;
             }
             scoreScriptableObject.Score = 0;
+            
+            if (powerChargerController == null) {
+                Debug.Util.LogError("TitleSceneManager::Initialize()::powerChargerController is null");
+                return;
+            }
         }
 
         private async UniTaskVoid ChangeSceneAsync(CancellationToken token) {
             await UniTask.WaitUntil(() => !SceneTransitionManager.Instance.IsTransition, cancellationToken: token);
             _state = TitleSceneState.Working;
+            powerChargerController.Activate();
 
             await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space), cancellationToken: token);
             _state = TitleSceneState.Transitioning;

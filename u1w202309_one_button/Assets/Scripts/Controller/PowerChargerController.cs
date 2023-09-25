@@ -11,6 +11,15 @@ namespace unity1week202309.Controller {
         // chargeされたパワー. 振動の度合いに影響する
         [SerializeField] private float _power = 0.0f;
         public float Power => _power;
+        private bool isActivated = false;
+        public void Activate() {
+            _heartTransform.gameObject.SetActive(true);
+            isActivated = true;
+        }
+        public void Deactivate() {
+            _heartTransform.gameObject.SetActive(false);
+            isActivated = false;
+        }
         
         private void Start() {
             _heartTransform = this.transform.GetChild(0).transform as RectTransform;
@@ -24,6 +33,7 @@ namespace unity1week202309.Controller {
                 return;
             }
             _thunderTransform.gameObject.SetActive(false);
+            _heartTransform.gameObject.SetActive(false);
             ChargeByInputAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
         
@@ -37,6 +47,7 @@ namespace unity1week202309.Controller {
         
         private async UniTaskVoid ChargeByInputAsync(CancellationToken token) {
             while (token.IsCancellationRequested == false) {
+                await UniTask.WaitUntil(() => isActivated, cancellationToken: token);
                 await UniTask.WaitUntil(() => Input.anyKeyDown, cancellationToken: token);
             
                 // アタッチした画像を振動させる by Dotween
