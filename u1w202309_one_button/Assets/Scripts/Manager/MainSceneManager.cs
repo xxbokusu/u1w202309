@@ -1,14 +1,10 @@
-using System;
-using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using DG.Tweening;
 using ScriptableObject;
 using TMPro;
 using unity1week202309.Controller;
 using UnityEngine;
-using UnityEngine.Assertions;
-using UnityEngine.Serialization;
+using unityroom.Api;
 
 namespace unity1week202309.Manager {
     /*
@@ -40,7 +36,7 @@ namespace unity1week202309.Manager {
         // Result時に表示するPanel
         [SerializeField] private GameObject resultPanel;
         [SerializeField] private TextMeshProUGUI scoreText;
-        
+
         // resourceを時間に見立てて、残量に応じてDirectional Lightの向きと色を変える
         [SerializeField] private Light directionalLight;
 
@@ -79,10 +75,12 @@ namespace unity1week202309.Manager {
                 Debug.Util.LogError("MainSceneManager::Start()::resultPanel is null");
                 return;
             }
+
             if (scoreText == null) {
                 Debug.Util.LogError("MainSceneManager::Start()::scoreText is null");
                 return;
             }
+
             if (directionalLight == null) {
                 Debug.Util.LogError("MainSceneManager::Start()::directionalLight is null");
                 return;
@@ -132,6 +130,9 @@ namespace unity1week202309.Manager {
             var score = (int)scoreScriptableObject.Score;
             scoreText.text = score.ToString();
             resultPanel.SetActive(true);
+            // C#スクリプトの冒頭に `using unityroom.Api;` を追加してください。
+            // ボードNo1にスコア123.45fを送信する。
+            UnityroomApiClient.Instance.SendScore(1, score, ScoreboardWriteMode.HighScoreDesc);
 
             // 3秒待ってスペースキーでリザルトへ
             await UniTask.Delay(3000, cancellationToken: token);
