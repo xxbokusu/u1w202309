@@ -73,12 +73,16 @@ crashlytics-build.properties
 [Aa]ssets/[Ss]treamingAssets/aa/*
 
 [Aa]ssets/Plugins
-[Aa]ssets/TextMesh Pro
+u1w202309_one_button/[Aa]ssets/Plugins
+u1w202309_one_button/[Aa]ssets/TextMesh Pro
+u1w202309_one_button/[Aa]ssets/UnityChan
+u1w202309_one_button/[Aa]ssets/Toon
+u1w202309_one_button/[Aa]ssets/Resources
+u1w202309_one_button/[Aa]ssets/ADG_Textures
+u1w202309_one_button/[Aa]ssets/GrassFlowers
+u1w202309_one_button/[Aa]ssets/TerrainSampleAssets
 [Aa]ssets/Cartoon_Texture_Pack
 [Aa]ssets/Resources/fonts
 [Aa]ssets/Resources/img
-[Aa]ssets/Resources/sound
-[Aa]ssets/AddressableAssetsData
+u1w202309_one_button/[Aa]ssets/Resources/Audios
 WebGLRelease
-
-[Aa]ssets/Resources_moved/sound
