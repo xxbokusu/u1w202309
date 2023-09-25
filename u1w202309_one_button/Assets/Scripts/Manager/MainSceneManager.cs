@@ -13,7 +13,7 @@ namespace unity1week202309.Manager {
      * 時間制限付きなので時間を管理し、残時間に応じて表現が変遷する
      * </summery>
      */
-    class MainSceneManager : GameSceneManager {
+    class MainSceneManager : BaseSceneManager {
         private enum MainSceneState {
             Initialize,
             Playing,

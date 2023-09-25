@@ -13,7 +13,7 @@ namespace unity1week202309.Manager
      * タイトルシーンの進行を管理する
      * </summery>
      */
-    class TitleSceneManager: GameSceneManager {
+    class TitleSceneManager: BaseSceneManager {
         private enum TitleSceneState
         {
             Waiting,

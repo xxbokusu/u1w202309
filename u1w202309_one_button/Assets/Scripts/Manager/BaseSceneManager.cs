@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace unity1week202309.Manager
 {
-    abstract class GameSceneManager : MonoBehaviour {
+    abstract class BaseSceneManager : MonoBehaviour {
         public abstract void Initialize();
     }
 }
