@@ -91,14 +91,14 @@ namespace unity1week202309.Manager {
             resultPanel.SetActive(false);
 
             SoundManager.Instance.PlayBGM("Picnic-Xy02-2(Slow)");
-            var groundCube = ObjectsManager.Instance.GetObject("Prefab/GroundCube");
+            var groundCube = ObjectsManager.Instance.GetObject("Prefab/GameStageTerrain");
             var unityChan = ObjectsManager.Instance.GetObject("Prefab/unitychan_dynamic");
             if (unityChan == null) {
                 Debug.Util.LogError("MainSceneManager::Initialize()::unitychan is null");
                 return;
             }
 
-            Instantiate(groundCube, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity, transform);
+            Instantiate(groundCube, new Vector3(-75.0f, 1.0f, -75.0f), Quaternion.identity, transform);
             // 右向きに生成する
             _unityChan = Instantiate(unityChan, new Vector3(0.0f, 0.5f, 0.0f), Quaternion.Euler(0.0f, 90.0f, 0.0f),
                 transform);

@@ -29,7 +29,7 @@ namespace unity1week202309.Controller {
         
         private void Update() {
             // 時間に応じてパワーは減衰する
-            _power -= Time.deltaTime;
+            _power -= Time.deltaTime * 2;
             if (_power < 0.0f) {
                 _power = 0.0f;
             }
