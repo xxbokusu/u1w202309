@@ -3,8 +3,7 @@ using Cysharp.Threading.Tasks;
 using ScriptableObject;
 using unity1week202309.Controller;
 using UnityEngine;
-using UnityEngine.Assertions;
-using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace unity1week202309.Manager
 {
@@ -25,10 +24,12 @@ namespace unity1week202309.Manager
         
         [SerializeField] private ScoreScriptableObject scoreScriptableObject;
         [SerializeField] private PowerChargerController powerChargerController;
+        [SerializeField] private bool doTransition = false;
 
         private void Start() {
             Initialize();
             ChangeSceneAsync(this.GetCancellationTokenOnDestroy()).Forget();
+            SetTransitionFlagByKeyDownAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
         public override void Initialize() {
             _state = TitleSceneState.Waiting;
@@ -44,6 +45,22 @@ namespace unity1week202309.Manager
                 Debug.Util.LogError("TitleSceneManager::Initialize()::powerChargerController is null");
                 return;
             }
+
+            var button = powerChargerController.gameObject.GetComponentInChildren<Button>();
+            if (button == null) {
+                Debug.Util.LogError("TitleSceneManager::Initialize()::button is null");
+                return;
+            }
+
+            button.onClick.AddListener(() => {
+                doTransition = true;
+                Debug.Util.Log("clicked");
+            });
+        }
+
+        private async UniTaskVoid SetTransitionFlagByKeyDownAsync(CancellationToken token) {
+            await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space), cancellationToken: token);
+            doTransition = true;
         }
 
         private async UniTaskVoid ChangeSceneAsync(CancellationToken token) {
@@ -51,7 +68,7 @@ namespace unity1week202309.Manager
             _state = TitleSceneState.Working;
             powerChargerController.Activate();
 
-            await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space), cancellationToken: token);
+            await UniTask.WaitUntil(() => doTransition, cancellationToken: token);
             _state = TitleSceneState.Transitioning;
             SoundManager.Instance.StopBGM("Sparrow-Real_Ambi01-1");
             SoundManager.Instance.PlaySE("Bush_Warbler_part");
