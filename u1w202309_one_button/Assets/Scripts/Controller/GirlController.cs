@@ -90,7 +90,6 @@ namespace unity1week202309.Controller {
             _mainSceneManager.WasteResource(_wasteResourceByState[_state] * Time.deltaTime);
             if (_mainSceneManager.IsResult) {
                 _state = GirlState.Resulting;
-                _powerChargerController.Deactivate();
                 _animator.SetBool("IsWalking", false);
                 _animator.SetBool("IsRunning", false);
                 _animator.SetBool("IsWarmUp", false);

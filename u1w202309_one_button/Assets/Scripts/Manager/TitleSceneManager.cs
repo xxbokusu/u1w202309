@@ -52,10 +52,7 @@ namespace unity1week202309.Manager
                 return;
             }
 
-            button.onClick.AddListener(() => {
-                doTransition = true;
-                Debug.Util.Log("clicked");
-            });
+            button.onClick.AddListener(() => doTransition = true);
         }
 
         private async UniTaskVoid SetTransitionFlagByKeyDownAsync(CancellationToken token) {

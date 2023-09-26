@@ -125,7 +125,6 @@ namespace unity1week202309.Manager {
             await UniTask.WaitUntil(() => playingResource <= 0.0f, cancellationToken: token);
             _currentState = MainSceneState.Result;
             SoundManager.Instance.PlaySE("Crow-Real_part");
-            SoundManager.Instance.StopBGM("Picnic-Xy02-2(Slow)");
             // Score表示用のTextMeshproを更新
             var score = (int)scoreScriptableObject.Score;
             scoreText.text = score.ToString();
@@ -136,7 +135,8 @@ namespace unity1week202309.Manager {
 
             // 3秒待ってスペースキーでリザルトへ
             await UniTask.Delay(3000, cancellationToken: token);
-            await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space), cancellationToken: token);
+            await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0), cancellationToken: token);
+            SoundManager.Instance.StopBGM("Picnic-Xy02-2(Slow)");
             SceneTransitionManager.Instance.ChangeScene(Scene.Title);
         }
     }
