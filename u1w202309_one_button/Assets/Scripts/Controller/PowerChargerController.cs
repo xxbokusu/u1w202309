@@ -2,6 +2,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace unity1week202309.Controller {
     public class PowerChargerController : MonoBehaviour {
@@ -34,6 +35,13 @@ namespace unity1week202309.Controller {
             }
             _thunderTransform.gameObject.SetActive(false);
             _heartTransform.gameObject.SetActive(false);
+            var button = _heartTransform.gameObject.GetComponent<Button>();
+            if (button == null) {
+                Debug.Util.LogError("PowerChargerController::Start()::button is null");
+                return;
+            }
+            button.onClick.AddListener(() => ShakeOnAction(this.GetCancellationTokenOnDestroy()));
+
             ChargeByInputAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
         
@@ -48,16 +56,21 @@ namespace unity1week202309.Controller {
         private async UniTaskVoid ChargeByInputAsync(CancellationToken token) {
             while (token.IsCancellationRequested == false) {
                 await UniTask.WaitUntil(() => isActivated, cancellationToken: token);
-                await UniTask.WaitUntil(() => Input.anyKeyDown, cancellationToken: token);
-            
-                // アタッチした画像を振動させる by Dotween
-                _thunderTransform.gameObject.SetActive(true);
-                _power += 2.0f;
-                this.transform.DOShakePosition(_power, strength: _power, vibrato: 10, randomness: 90, snapping: false, fadeOut: true);
-                // Power charge span
-                await UniTask.Delay(500, cancellationToken: token);
-                _thunderTransform.gameObject.SetActive(false);
+                await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space), cancellationToken: token);
+
+                var task = ShakeOnAction(token);
+                await UniTask.WaitUntil(() => task.Status.IsCompleted(), cancellationToken: token);
             }
+        }
+
+        private async UniTask ShakeOnAction(CancellationToken token) {
+            // アタッチした画像を振動させる by Dotween
+            _thunderTransform.gameObject.SetActive(true);
+            _power += 2.0f;
+            this.transform.DOShakePosition(_power, strength: _power, vibrato: 10, randomness: 90, snapping: false, fadeOut: true);
+            // Power charge span
+            await UniTask.Delay(500, cancellationToken: token);
+            _thunderTransform.gameObject.SetActive(false);
         }
     }
 }
