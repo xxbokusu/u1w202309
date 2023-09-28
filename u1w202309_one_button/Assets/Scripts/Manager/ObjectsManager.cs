@@ -17,6 +17,7 @@ namespace unity1week202309.Manager {
 
         private Dictionary<string, GameObject> _objectsDictionary = new() {
             { "Prefab/unitychan_dynamic", null },
+            { "Prefab/RAYNOS-chan", null },
             { "Prefab/GroundCube", null},
             { "Prefab/GameStageTerrain", null},
         };

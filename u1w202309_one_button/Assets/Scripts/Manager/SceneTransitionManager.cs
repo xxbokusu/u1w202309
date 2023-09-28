@@ -34,8 +34,6 @@ namespace unity1week202309.Manager
         
         // シーン遷移時にFade out/inをするためのCanvas
         [SerializeField] private FadeCanvas fadeCanvas;
-        // クレジット表示用のCanvasGroup.最初に一度だけFade outする
-        [SerializeField] private CanvasGroup creditCanvasGroup;
         
         void Awake() {
             if (Instance == null) {
@@ -48,30 +46,14 @@ namespace unity1week202309.Manager
                 Debug.Util.LogError("SceneTransitionManager::Awake()::fadeCanvas is null");
                 return;
             }
-            if (creditCanvasGroup == null) {
-                Debug.Util.LogError("SceneTransitionManager::Awake()::creditCanvasGroup is null");
-                return;
-            }
-            creditCanvasGroup.alpha = 1.0f;
+            ChangeScene(_nextScene);
         }
         
         public void ChangeScene(Scene targetScene) {
             _nextScene = targetScene;
             LoadSceneAsync(_nextScene, this.GetCancellationTokenOnDestroy()).Forget();
         }
-
-        // クレジットのフェードアウトを見てから初回遷移をする
-        private void Update() {
-            if (_isInitialized) return;
-
-            creditCanvasGroup.alpha -= 0.01f;
-            if (creditCanvasGroup.alpha > 0.0f) return;
-
-            _isInitialized = true;
-            creditCanvasGroup.gameObject.SetActive(false);
-            ChangeScene(_nextScene);
-        }
-
+        
         //非同期的に次のシーンを読み込んで遷移する. 読み込み開始でフェードアウト, 読み込み完了でフェードイン
         private async UniTaskVoid LoadSceneAsync(Scene targetScene, CancellationToken token) {
             fadeCanvas.SceneFadeOutAsync(token).Forget();
